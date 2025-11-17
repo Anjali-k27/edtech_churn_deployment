@@ -1,0 +1,58 @@
+project:
+  name: "EdTech Student Churn Prediction"
+  version: "1.0.0"
+  description: "ML model to predict student churn across EdTech platforms"
+
+data:
+  raw_data_path: "./data/raw/"
+  processed_data_path: "./data/processed/"
+  train_test_split_ratio: 0.8
+  validation_split_ratio: 0.2
+  random_state: 42   # for reproducability 
+
+model:
+  target_column: "churn"
+  models_to_train:
+    - "logistic_regression"
+    - "random_forest"
+    - "xgboost"
+    - "lightgbm"
+    - "catboost"
+  
+  hyperparameter_tuning:
+    enable: true
+    n_trials: 100
+    cv_folds: 5
+  
+  feature_engineering:
+    enable_scaling: true
+    enable_encoding: true
+    handle_missing_values: true
+    feature_selection: true
+
+mlflow:
+  tracking_uri: "./mlruns"
+  experiment_name: "edtech-churn-prediction"
+  artifact_location: "./mlruns"
+  
+aws:
+  region: "us-east-1"
+  ec2_instance_type: "t3.medium"
+  key_pair_name: "edtech-keypair"
+  security_group_name: "edtech-sg"
+
+streamlit:
+  app_name: "EdTech Churn Predictor"
+  port: 8501
+  host: "0.0.0.0"
+
+jenkins:
+  pipeline_name: "edtech-churn-pipeline"
+  build_triggers:
+    - "github_webhook"
+    - "scheduled"
+  
+deployment:
+  model_registry: "mlflow"
+  deployment_target: "aws_ec2"
+  monitoring_enabled: true
